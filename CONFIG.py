@@ -43,12 +43,10 @@ def get_func_patameters(last_item_name):
         a, b = ITEM_3_S, ITEM_3_b
     return a, b
 
-
-
 # Poisson arrival of items:
 LAMB1 = 0.1
-LAMB2 = 0.3
-LAMB3 = 0.2
+LAMB2 = 0.2
+LAMB3 = 0.3
 EPSILON_GREEDY = 0.9
 #work for 1 unit of time, for each worker.
 
@@ -68,16 +66,6 @@ WORKERS_POWER_DICT = {
     3: 0.5,
     4: 0.7
 }
-
-#
-# WORKERS_POWER_DICT = {
-#     W0: 0.6,
-#     W1: 0.1,
-#     W2: 0.4,
-#     W3: 0.5,
-#     W4: 0.9
-# }
-
 
 WORKERS_ORDER = dict(zip(WORKERS_NAMES, range(len(WORKERS_NAMES))))
 

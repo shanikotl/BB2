@@ -31,45 +31,32 @@ class State(object):
         a, b = get_func_patameters(last_item_name)
         return (1 - x0)/v * (a /2. * (1 + x0) + b)
 
-    # def get_cycle_time(self):
-    #     last_item = self.items_prod_line[N_WORKERS-1]
-    #     last_item_name = last_item[ITEM_NAME]
-    #     #remain_work = get_work_last_worker( / N_PARTS, last_item_name)
-    #     if last_item_name == I1:
-    #         return (remain_work - ITEM_1_b) / (ITEM_1_S * WORKERS_POWER_DICT[N_WORKERS - 1])
-    #     elif last_item_name == I1:
-    #         return (remain_work - ITEM_2_b) / (ITEM_2_S * WORKERS_POWER_DICT[N_WORKERS - 1])
-    #     else:
-    #         return (remain_work - ITEM_3_b) / (ITEM_3_S * WORKERS_POWER_DICT[N_WORKERS - 1])
+def get_arr_state(s1):
+    locs = []
+    names = []
+    d = {}
+    for k in s1.values():
+        d[k[ITEM_LOC]] = k[ITEM_NAME]
+        names.append(k[ITEM_NAME])
+        locs.append(k[ITEM_LOC])
+    return names, locs
 
+def divide_queues_types(visited_states, n=2):
+    type1_states = []
+    type2_states = []
+    for s in visited_states:
+        if len([i for i in s[1].values() if i[1] > n]) == 3:
+            type1_states.append(s)
+        else:
+            type2_states.append(s)
+    return type1_states, type2_states
 
-
-#     def calc_rewards_for_actions(self):
-#         for action in self.available_items:
-#             immidiate_reward, next_state = self.do_cycle_process(action=action)
-#             self.rewards_states[action] = {REWARD: immidiate_reward, NEXT_STEP: next_state}
-#
-#     def do_cycle_process(self, action=I3):
-#         """
-#         :param self:
-#         :param action:
-#         :return: cycle_time = immidiate reward.
-#         """
-#         # add the new item to the production
-#         items_prod_line = add_item_change_workers(self.items_prod_line, ITEMS_WORK_DIST_DICT, chosen_item=action)
-#         # re-arrange the workers
-#         workers_prod_line = workers_change_bb(self.workers_prod_line)
-#         # remove the chosen item for queue
-#         self.all_items_in_queue[action] -= 1
-#         # run a cycle. finished when last item finish!
-#         cycle_time, items_prod_line, workers_prod_line, items_arrive_in_process = run_one_cycle(workers_prod_line,
-#                                                                                             items_prod_line)
-#         all_items_in_queue = sum_dicts(self.all_items_in_queue, items_arrive_in_process)
-#         new_s = [workers_prod_line, items_prod_line, all_items_in_queue]
-#         return cycle_time, new_s
-#
-#
-# print "bye"
-# # # immidiate_reward, new_state = calc_reward_per_state(state, action=I3)
-#
-# # immidiate_reward, new_state, chosen_action = choose_action_greedy(state)
+# def get_arr_state(s):
+#     locs = []
+#     names = []
+#     d = {}
+#     for k in np.sort(s[0].keys()):
+#         locs.append(s[0][k][ITEM_LOC])
+#         names.append(s[0][k][ITEM_NAME])
+#         d[s[0][k][ITEM_LOC]] = s[0][k][ITEM_NAME]
+#     return d
