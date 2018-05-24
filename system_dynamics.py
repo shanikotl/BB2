@@ -28,7 +28,7 @@ def init_production_line():
         1: {ITEM_NAME: I3, ITEM_LOC: 2},
         2: {ITEM_NAME: I3, ITEM_LOC: 5},
         3: {ITEM_NAME: I2, ITEM_LOC: 11},
-        4: {ITEM_NAME: I1, ITEM_LOC: 30}
+        4: {ITEM_NAME: I1, ITEM_LOC: 38}
     }
     items_in_queue = {I1: 1, I2: 0, I3: 1}
     return items_prod_line, items_in_queue
@@ -46,8 +46,9 @@ def run_one_cycle(items_prod_line, CT, items_arrive_in_process):
             item_d = items_prod_line[w_idx]
             item_name = item_d[ITEM_NAME]
             curr_x_location = item_d[ITEM_LOC] / N_PARTS
-            curr_work = item_dist(curr_x_location, item_name=item_name)
-            delta_work = get_delta_work(TIME_DELTA * WORKERS_POWER_DICT[w_idx], item_name=item_name)
+            curr_work = work_accum(curr_x_location, item_name=item_name)
+            #delta_work = get_delta_work(TIME_DELTA * WORKERS_POWER_DICT[w_idx], item_name=item_name)
+            delta_work = TIME_DELTA * WORKERS_POWER_DICT[w_idx]
             worker_new_loc = get_work_inverse(curr_work + delta_work, item_name=item_name) * N_PARTS
             # print "cycle_time is %s, worker index: %s, " \
             #       "curr_x_location - %s and worker_new_loc %s " % (cycle_time, w_idx, curr_x_location, worker_new_loc)
@@ -69,8 +70,10 @@ def run_one_cycle(items_prod_line, CT, items_arrive_in_process):
             items_arrive_in_process[get_random_item_type()] += 1
             time_from_prev_event = 0
         cycle_time += TIME_DELTA
-    #return items_arrive_in_process
-
+    # make the location integers (work that was done in a station will get lost..)
+    for w_idx in items_prod_line.keys():
+        d = int(items_prod_line[w_idx][ITEM_LOC])
+        items_prod_line[w_idx][ITEM_LOC] = d
 
 
 def run_mdp_on_system(policy="rand"):
@@ -88,10 +91,19 @@ def run_mdp_on_system(policy="rand"):
         # cycle time doesn't depand on the (immidiate) action
         cycle_time = cur_state.get_cycle_time()
         total_time_of_system += t + cycle_time
-        print "cycle time %s, chosen action %s" %(cycle_time, chosen_action)
-        #print "state of the last worker, << before >> cycle run:", cur_state.items_prod_line[4]
+        print "CYCLE  number - %s, cycle time %s, chosen action %s" % (n_inserted_items, cycle_time, chosen_action)
+        print "last worker - before runing the cycle  -  ", cur_state.items_prod_line[N_WORKERS-1]
+        if n_inserted_items==4:
+            print "things look starange from here.. "
         run_one_cycle(cur_state.items_prod_line, cycle_time, cur_state.items_in_queue) # values are mutable, inplace.
-        #print "state of the last worker, after cycle run:", cur_state.items_prod_line[4]
+
+        #print "state is - after runing : ", items_prod_line
+
+        #print "Items in queue: ", cur_state.items_in_queue
+        # for f in cur_state.items_in_queue.values():
+        #     if f < 0 :
+        #         print "n_inserted_items is: ", n_inserted_items
+        print "state of the last worker, after cycle run:", cur_state.items_prod_line[N_WORKERS-1]
         n_inserted_items += 1
         all_processed_items[chosen_action] += 1
         #print "run number - %s, %s, %s" % (n_inserted_items, cur_state.items_in_queue, cur_state.items_prod_line)
@@ -109,7 +121,11 @@ def get_first_state():
 
 
 def choose_action_to_move(state, method="greedy"):
-    available_items = [i[0] for i in state.items_in_queue.items() if i[1] > 0]
+    available_items = []
+    for i, v in state.items_in_queue.items():
+        for k in range(v):
+            available_items.append(i)
+    #[i[0] for i in state.items_in_queue.items() if i[1] > 0]
     t = 0
     if len(available_items) > 0:
         #if method == "rand":

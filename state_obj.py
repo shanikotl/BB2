@@ -25,13 +25,11 @@ class State(object):
     def get_cycle_time(self):
         last_item = self.items_prod_line[N_WORKERS-1]
         last_item_name = last_item[ITEM_NAME]
-        remain_work = get_work_last_worker(last_item[ITEM_LOC] / N_PARTS, last_item_name)
-        if last_item_name == I1:
-            return (remain_work - ITEM_1_b) / (ITEM_1_S * WORKERS_POWER_DICT[N_WORKERS - 1])
-        elif last_item_name == I2:
-            return (remain_work - ITEM_2_b) / (ITEM_2_S * WORKERS_POWER_DICT[N_WORKERS - 1])
-        else:
-            return (remain_work - ITEM_3_b) / (ITEM_3_S * WORKERS_POWER_DICT[N_WORKERS - 1])
+        x0 = last_item[ITEM_LOC] / N_PARTS
+        v = WORKERS_POWER_DICT[N_WORKERS - 1]
+        #remain_work = get_work_last_worker(last_item[ITEM_LOC] / N_PARTS, last_item_name)
+        a, b = get_func_patameters(last_item_name)
+        return (1 - x0)/v * (a /2. * (1 + x0) + b)
 
     # def get_cycle_time(self):
     #     last_item = self.items_prod_line[N_WORKERS-1]

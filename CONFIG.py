@@ -28,11 +28,20 @@ TIME_DELTA = 0.01
 N_PARTS = 40.# size will be 1/40.
 STEP_SIZE = 1./N_PARTS
 N_WORKERS = 5
-N_CYCLES = 100
-ITEM_1_S, ITEM_1_b = 3., 0.
-ITEM_2_S, ITEM_2_b = 1., 0.
-ITEM_3_S, ITEM_3_b = 7., 0.
+N_CYCLES = 300
+ITEM_1_S, ITEM_1_b = 3., 2.
+ITEM_2_S, ITEM_2_b = 2, 0.
+ITEM_3_S, ITEM_3_b = 10., 0.
 
+
+def get_func_patameters(last_item_name):
+    if last_item_name == I1:
+        a, b = ITEM_1_S, ITEM_1_b
+    elif last_item_name == I2:
+        a, b = ITEM_2_S, ITEM_2_b
+    else:
+        a, b = ITEM_3_S, ITEM_3_b
+    return a, b
 
 
 
@@ -55,9 +64,9 @@ items_prod_line = {
 WORKERS_POWER_DICT = {
     0: 0.6,
     1: 0.1,
-    2: 0.4,
+    2: 10,
     3: 0.5,
-    4: 0.9
+    4: 0.7
 }
 
 #
