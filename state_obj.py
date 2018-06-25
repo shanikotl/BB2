@@ -31,25 +31,37 @@ class State(object):
         a, b = get_func_patameters(last_item_name)
         return (1 - x0)/v * (a /2. * (1 + x0) + b)
 
-def get_arr_state(s1):
+
+def get_arr_state(s1): # TODO why? and two going over on the same data!
     locs = []
     names = []
-    d = {}
+    #d = {}
     for k in s1.values():
-        d[k[ITEM_LOC]] = k[ITEM_NAME]
+        #d[k[ITEM_LOC]] = k[ITEM_NAME]
         names.append(k[ITEM_NAME])
         locs.append(k[ITEM_LOC])
     return names, locs
 
+
 def divide_queues_types(visited_states, n=2):
+    """
+    visited_states - list - describe state:
+     - items in system, with locations.
+     - items in queue
+     - immidiate reward
+    n - number of minimum items per type
+    """
     type1_states = []
     type2_states = []
     for s in visited_states:
-        if len([i for i in s[1].values() if i[1] > n]) == 3:
+        if len([i for i in s[1] if i[1] > n]) == 3:
             type1_states.append(s)
         else:
             type2_states.append(s)
+    print len(type1_states), len(type2_states)
     return type1_states, type2_states
+
+
 
 # def get_arr_state(s):
 #     locs = []

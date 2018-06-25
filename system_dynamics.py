@@ -76,15 +76,17 @@ def run_one_cycle(items_prod_line, CT, items_arrive_in_process):
         items_prod_line[w_idx][ITEM_LOC] = d
 
 
-def run_episode(policy="rand"):
+def run_episode(policy="weighted_rand", n_cycles=N_CYCLES):
     cur_state = get_first_state()
     n_inserted_items = 0
     total_time_of_system = 0
     all_processed_items = constract_finished_items_dict()
     visited_states = []
-    while n_inserted_items < N_CYCLES:
+    while n_inserted_items < n_cycles:
+        if n_inserted_items % 2000 == 0:
+            print "Processed %s products so far" % n_inserted_items
         # choose what item to insert to system
-        t, chosen_action = choose_action_to_move(cur_state)  #immidiate_reward = CT
+        t, chosen_action = choose_action_to_move(cur_state, method=policy)  #immidiate_reward = CT
         # change the workers location,
         add_item_change_workers(cur_state.items_prod_line, chosen_action)
         # cycle time doesn't depand on the (immidiate) action
@@ -96,15 +98,27 @@ def run_episode(policy="rand"):
         run_one_cycle(cur_state.items_prod_line, cycle_time, cur_state.items_in_queue) # values are mutable, inplace.
         #print "state of the last worker, after cycle run:", cur_state.items_prod_line[N_WORKERS-1]
         n_inserted_items += 1
-        visited_states.append([get_arr_state(cur_state.items_prod_line), cur_state.items_in_queue.items(), total_time_of_system / float(n_inserted_items)])
-        if n_inserted_items==4:
+        # TODO return an object. just make sure it doesn't overite..
+        k = dummy_f(chosen_action)
+        visited_states.append([get_arr_state(cur_state.items_prod_line), cur_state.items_in_queue.items(),
+                               total_time_of_system / float(n_inserted_items), k])
+        if n_inserted_items == 4:
             print "a"
         all_processed_items[chosen_action] += 1
         #print "run number - %s, %s, %s" % (n_inserted_items, cur_state.items_in_queue, cur_state.items_prod_line)
         #cur_state = State(items_prod_line, items_in_queue)
-    print "-->>> Finished processing %s items, in total time of %s" % (N_CYCLES, total_time_of_system)
+    print "-->>> Finished processing %s items, in total time of %s" % (n_cycles, total_time_of_system)
     print "-->>> Processes items: %s " % all_processed_items
     return visited_states, total_time_of_system, all_processed_items
+
+
+def dummy_f(chosen_action):
+    if chosen_action == I1:
+        return 1
+    elif chosen_action == I2:
+        return 2
+    else:
+        return 3
 
 
 def get_first_state():
@@ -115,15 +129,20 @@ def get_first_state():
     return State(items_prod_line, items_in_queue)
 
 
-def choose_action_to_move(state, method="greedy"):
+def choose_action_to_move(state, method="weighted_rand"):
     available_items = []
     for i, v in state.items_in_queue.items():
         for k in range(v):
             available_items.append(i)
     #[i[0] for i in state.items_in_queue.items() if i[1] > 0]
     t = 0
+
     if len(available_items) > 0:
-        chosen_action = np.random.choice(available_items)
+        if method == "weighted_rand":
+            chosen_action = np.random.choice(available_items)
+        if method == "stup":
+            chosen_action = np.random.choice(np.unique(available_items))
+
         state.items_in_queue[chosen_action] -= 1
     else:
         # TODO - not necessary the right thing todo! it might be better to wait for another item..
@@ -131,7 +150,9 @@ def choose_action_to_move(state, method="greedy"):
         chosen_action = get_random_item_type()
     return t, chosen_action
 
+
+
 # s = get_first_state()
 # print s.items_prod_line
-visited_states, total_time_of_system, all_processed_items = run_episode()
+#visited_states, total_time_of_system, all_processed_items = run_episode()
 print "hhhhhhhhhhhhhhh"
