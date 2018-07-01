@@ -173,7 +173,33 @@ def get_similar_states_idx(visited_states, some_state):
     return similar_states
 
 
+def get_unique_states(visited_states):
+    all_states_idx = range(len(visited_states))
+    taken_states = []
+    while len(all_states_idx) > 0:
+        k = all_states_idx[0]
+        z = visited_states[k]
+        sim_states_idx = get_similar_states_idx(visited_states, z)
+        all_states_idx = np.setdiff1d(all_states_idx, sim_states_idx)
+        taken_states.append(k)
+        if len(taken_states) % 500 == 0:
+            print "treated %s states, there are %s left" % (len(taken_states), len(all_states_idx))
+    return taken_states
 #
+#
+# def get_unique_states(visited_states):
+#     all_states_idx = range(len(visited_states))
+#     taken_states = []
+#     while len(all_states_idx) > 0:
+#         k = all_states_idx[0]
+#         z = visited_states[k]
+#         sim_states_idx = get_similar_states_idx(visited_states, z)
+#         all_states_idx = np.setdiff1d(all_states_idx, sim_states_idx)
+#         taken_states.append(k)
+#         if len(taken_states) % 500 == 0 :
+#             print "treated %s states, there are %s left" % (len(taken_states), len(all_states_idx))
+#     return taken_states
+# #
 # def divide_queues_types(visited_states, n=2):
 #     """
 #     visited_states - list - describe state:

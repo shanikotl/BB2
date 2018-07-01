@@ -28,7 +28,7 @@ TIME_DELTA = 0.01
 N_PARTS = 40.# size will be 1/40.
 STEP_SIZE = 1./N_PARTS
 N_WORKERS = 5
-N_CYCLES = 3000
+N_CYCLES = 13517
 ITEM_1_S, ITEM_1_b = 3., 2.
 ITEM_2_S, ITEM_2_b = 2, 0.
 ITEM_3_S, ITEM_3_b = 10., 0.
@@ -44,7 +44,7 @@ def get_func_patameters(last_item_name):
     return a, b
 
 # Poisson arrival of items:
-LAMB1 = 0.1
+LAMB1 = 0.2
 LAMB2 = 0.2
 LAMB3 = 0.3
 EPSILON_GREEDY = 0.9
